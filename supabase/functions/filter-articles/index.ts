@@ -11,6 +11,8 @@ const AI_GATEWAY_URL =
   Deno.env.get("AI_GATEWAY_URL") ??
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
+const FILTER_BATCH_SIZE = 10;
+
 interface ArticleRow {
   id: string;
   title: string;
@@ -37,7 +39,7 @@ async function scoreBatch(articles: ArticleRow[], userTopics: string[]) {
     `Velocity: "rising" (gaining attention), "steady" (ongoing topic), "noise" (low signal).`;
 
   const body = {
-    model: "google/gemini-2.5-flash",
+    model: Deno.env.get("AI_GATEWAY_MODEL") ?? "gemini-2.5-flash",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `Score these articles:\n${JSON.stringify(items, null, 2)}` },
@@ -152,22 +154,27 @@ Deno.serve(async (req) => {
       topic_name: r.topics?.name ?? null,
     }));
 
-    const scores = await scoreBatch(articles, topicNames);
-
-    // Update each article
     let updated = 0;
-    for (const s of scores) {
-      const a = articles[s.idx];
-      if (!a) continue;
-      const { error: upErr } = await admin
-        .from("articles")
-        .update({
-          relevance_score: s.relevance,
-          velocity: s.velocity,
-          summary: s.summary,
-        })
-        .eq("id", a.id);
-      if (!upErr) updated++;
+    for (let offset = 0; offset < articles.length; offset += FILTER_BATCH_SIZE) {
+      if (offset > 0) {
+        await new Promise(r => setTimeout(r, 5000));
+      }
+      const batch = articles.slice(offset, offset + FILTER_BATCH_SIZE);
+      const scores = await scoreBatch(batch, topicNames);
+
+      for (const s of scores) {
+        const a = batch[s.idx];
+        if (!a) continue;
+        const { error: upErr } = await admin
+          .from("articles")
+          .update({
+            relevance_score: s.relevance,
+            velocity: s.velocity,
+            summary: s.summary,
+          })
+          .eq("id", a.id);
+        if (!upErr) updated++;
+      }
     }
 
     return new Response(JSON.stringify({ scored: updated, total: articles.length }), {

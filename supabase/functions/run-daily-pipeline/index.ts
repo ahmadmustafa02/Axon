@@ -140,7 +140,7 @@ async function filterForUser(admin: any, userId: string) {
   }));
 
   const scores = (await aiCall({
-    model: "google/gemini-2.5-flash",
+    model: Deno.env.get("AI_GATEWAY_MODEL") ?? "gemini-2.5-flash",
     messages: [
       {
         role: "system",
@@ -223,7 +223,7 @@ async function assembleForUser(admin: any, userId: string) {
   }));
 
   const briefing = await aiCall({
-    model: "google/gemini-2.5-flash",
+    model: Deno.env.get("AI_GATEWAY_MODEL") ?? "gemini-2.5-flash",
     messages: [
       {
         role: "system",

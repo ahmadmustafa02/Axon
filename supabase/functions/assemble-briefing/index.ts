@@ -50,7 +50,7 @@ async function assemble(articles: ArticleRow[], userTopics: string[], displayNam
     `- Title should be punchy and dated-feeling, e.g. "Friday signal" or "AI ships, regulators react".`;
 
   const body = {
-    model: "google/gemini-2.5-flash",
+    model: Deno.env.get("AI_GATEWAY_MODEL") ?? "gemini-2.5-flash",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `Today's candidate articles:\n${JSON.stringify(items, null, 2)}` },
