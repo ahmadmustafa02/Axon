@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Axon design system — editorial cream, indigo ink accent.
+   All colors HSL. */
+
+@layer base {
+  :root {
+    /* Surfaces */
+    --background: 40 33% 97%;          /* #FAF7F2 warm cream */
+    --foreground: 0 0% 4%;             /* #0B0B0B near black */
+
+    --card: 40 33% 97%;
+    --card-foreground: 0 0% 4%;
+
+    --popover: 40 33% 99%;
+    --popover-foreground: 0 0% 4%;
+
+    /* Primary = ink (the black pill button) */
+    --primary: 0 0% 4%;
+    --primary-foreground: 40 33% 97%;
+
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 0 0% 4%;
+
+    --muted: 40 18% 90%;
+    --muted-foreground: 30 8% 38%;
+
+    /* Accent = warm orange — Axon's signature */
+    --accent: 22 89% 53%;              /* #F26B1F */
+    --accent-foreground: 40 33% 97%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 40 33% 97%;
+
+    --border: 30 15% 86%;
+    --input: 30 15% 86%;
+    --ring: 22 89% 53%;
+
+    --radius: 9999px;                  /* pills by default */
+
+    /* Trend velocity indicators (used later) */
+    --signal-hot: 12 88% 52%;
+    --signal-rising: 38 92% 52%;
+    --signal-steady: 30 8% 55%;
+
+    --sidebar-background: 40 33% 97%;
+    --sidebar-foreground: 0 0% 4%;
+    --sidebar-primary: 0 0% 4%;
+    --sidebar-primary-foreground: 40 33% 97%;
+    --sidebar-accent: 40 20% 92%;
+    --sidebar-accent-foreground: 0 0% 4%;
+    --sidebar-border: 30 15% 86%;
+    --sidebar-ring: 22 89% 53%;
+  }
+
+  .dark {
+    /* Dark mode reserved — same tokens for now to avoid breaks */
+    --background: 0 0% 6%;
+    --foreground: 40 33% 95%;
+    --card: 0 0% 6%;
+    --card-foreground: 40 33% 95%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 40 33% 95%;
+    --primary: 40 33% 95%;
+    --primary-foreground: 0 0% 6%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 40 33% 95%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 30 8% 62%;
+    --accent: 22 90% 60%;
+    --accent-foreground: 0 0% 6%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 33% 95%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 22 90% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Editorial display: Fraunces for hero headlines */
+  .font-display {
+    font-family: "Fraunces", "Georgia", serif;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    font-optical-sizing: auto;
+    font-variation-settings: "SOFT" 50, "WONK" 0;
+  }
+
+  /* Small uppercase eyebrow labels */
+  .eyebrow {
+    @apply text-xs uppercase tracking-[0.18em] text-accent font-semibold;
+  }
+
+  /* Orange highlight underline for headlines */
+  .orange-underline {
+    background-image: linear-gradient(transparent 65%, hsl(var(--accent) / 0.35) 65%);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding: 0 0.1em;
+  }
+}

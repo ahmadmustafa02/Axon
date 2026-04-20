@@ -1,0 +1,7 @@
+project_id = "opjeouphzvfcthhgreob"
+
+[functions.run-daily-pipeline]
+verify_jwt = false
+
+[functions.send-briefing-email]
+verify_jwt = false
