@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
     let updated = 0;
     for (let offset = 0; offset < articles.length; offset += FILTER_BATCH_SIZE) {
       if (offset > 0) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 15000));
       }
       const batch = articles.slice(offset, offset + FILTER_BATCH_SIZE);
       const scores = await scoreBatch(batch, topicNames);
