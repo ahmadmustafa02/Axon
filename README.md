@@ -18,6 +18,8 @@ Pick your topics, let Axon ingest fresh stories, rank what matters with Groq AI,
 
 <img width="1902" height="946" alt="image" src="https://github.com/user-attachments/assets/fc00e5d1-9a34-47cb-be1d-0c70e6cf8d45" />
 
+# Dashboard
+
 <img width="1599" height="940" alt="image" src="https://github.com/user-attachments/assets/a5f749b4-518f-4155-8c93-d822a981fad0" />
 
 
