@@ -1,38 +1,54 @@
-# Axon - Signal before the noise
+<div align="center">
 
-Axon is a personal AI briefing agent. You pick topics, Axon pulls relevant stories, scores them with Gemini Flash, assembles a daily briefing, and can email the result.
+# ⚡ Axon
+### Signal before the noise
 
-Built with React, TypeScript, Vite, Supabase, and Google Gemini Flash.
+[![Live on Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?logo=vercel&logoColor=white)](https://ai-axon.vercel.app)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20Auth%20%2B%20Edge%20Functions-3FCF8E?logo=supabase&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-llama--3.3--70b-F55036)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
-## Stack
+[🌐 Live App](https://ai-axon.vercel.app) • [💻 GitHub](https://github.com/ahmadmustafa02/Axon)
 
-- Frontend: React + TypeScript + Vite
-- Backend: Supabase Postgres + Auth + Edge Functions
-- AI: Google Gemini Flash via OpenAI-compatible chat endpoint
-- Data sources: Hacker News (Algolia) and Dev.to
+</div>
 
-## Project Structure
+Axon is a personal AI daily briefing agent that turns noisy feeds into focused morning intelligence.  
+Pick your topics, let Axon ingest fresh stories, rank what matters with Groq AI, and deliver a clean briefing in a fast, beautiful dark UI.
 
-- `src/` - React frontend
-- `supabase/migrations/` - database schema and policy migrations
-- `supabase/functions/` - Supabase Edge Functions for scraping, scoring, assembling, and email delivery
-- `supabase/config.toml` - local Supabase function config
+![Dashboard](./public/screenshot.png)
 
-## Prerequisites
+## ✨ Features
 
-- Node.js 18+ (or newer LTS)
-- npm
-- Supabase CLI
+- 🧠 **Personalized signal engine** — track topics like AI agents, robotics, climate tech, security, and more
+- 🕵️ **Daily source scraping** — pulls fresh stories from Hacker News + Dev.to
+- 📊 **AI relevance scoring** — Groq (`llama-3.3-70b`) scores articles `0-100` and tags momentum (`rising`, `steady`, `noise`)
+- 🗞️ **Daily briefing assembly** — top stories + rising trends in a concise, readable format
+- 📬 **Optional email delivery** — send daily briefings via Resend integration
+- 🌙 **Polished dark UI** — fast React experience with keyboard shortcuts
+- 🆓 **Free-friendly architecture** — self-hostable, with free AI inference path via Groq
 
-## Local Setup
+## 🧱 Tech Stack
 
-1. Install dependencies:
+| Layer | Tech | Purpose |
+|---|---|---|
+| Frontend | React + TypeScript + Vite | Fast, typed SPA with modern DX |
+| Backend | Supabase (Postgres, Auth, Edge Functions) | Data, auth, serverless jobs |
+| AI | Groq (`llama-3.3-70b`) | Relevance scoring + briefing generation |
+| Email | Resend | Optional daily briefing delivery |
+| Sources | Hacker News, Dev.to | Daily article ingestion |
+
+## 🚀 Quick Start
+
+### 1) Clone and install
 
 ```bash
+git clone https://github.com/ahmadmustafa02/Axon.git
+cd Axon
 npm install
 ```
 
-2. Create `.env` in project root for frontend values:
+### 2) Configure frontend env (`.env`)
 
 ```env
 VITE_SUPABASE_URL="https://<your-project-ref>.supabase.co"
@@ -40,28 +56,9 @@ VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_xxx"
 VITE_SUPABASE_PROJECT_ID="<your-project-ref>"
 ```
 
-3. Run frontend:
+### 3) Set up Supabase
 
-```bash
-npm run dev
-```
-
-4. Build/test/lint:
-
-```bash
-npm run build
-npm run test
-npm run lint
-```
-
-## Supabase Setup
-
-Apply schema:
-
-- Option A: run migrations in `supabase/migrations/` in order
-- Option B: paste your combined SQL into Supabase SQL Editor
-
-Deploy edge functions:
+Run migrations from `supabase/migrations` (oldest to newest), then deploy functions:
 
 ```bash
 supabase functions deploy scrape-sources
@@ -71,94 +68,88 @@ supabase functions deploy send-briefing-email
 supabase functions deploy run-daily-pipeline
 ```
 
-Set secrets (Supabase project secrets):
+Set function secrets:
 
 ```bash
 supabase secrets set SUPABASE_URL="https://<your-project-ref>.supabase.co"
 supabase secrets set SUPABASE_SERVICE_ROLE_KEY="<service-role-key>"
-supabase secrets set SUPABASE_PUBLISHABLE_KEY="<publishable-key>"
+supabase secrets set SUPABASE_PUBLISHABLE_KEY="<publishable-or-anon-key>"
 
-supabase secrets set AI_GATEWAY_API_KEY="<gemini-api-key>"
-supabase secrets set AI_GATEWAY_URL="https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+supabase secrets set AI_GATEWAY_URL="https://api.groq.com/openai/v1/chat/completions"
+supabase secrets set AI_GATEWAY_API_KEY="<groq-api-key>"
+supabase secrets set AI_GATEWAY_MODEL="llama-3.3-70b-versatile"
 
-supabase secrets set RESEND_GATEWAY_URL="<your-resend-gateway-base-url>"
-supabase secrets set GATEWAY_API_KEY="<gateway-auth-key>"
+supabase secrets set RESEND_GATEWAY_URL="<resend-connector-base-url>"
+supabase secrets set GATEWAY_API_KEY="<connector-key>"
 supabase secrets set RESEND_API_KEY="<resend-api-key>"
 ```
 
-Notes:
+### 4) Start app
 
-- `AI_GATEWAY_URL` is optional in code and defaults to the Google OpenAI-compatible Gemini endpoint.
-- `AI_GATEWAY_API_KEY` is required for AI scoring/briefing generation functions.
-- In `supabase/config.toml`, `run-daily-pipeline` and `send-briefing-email` are configured with `verify_jwt = false` for cron/service usage.
+```bash
+npm run dev
+```
 
-## Environment Variables
+## 🔐 Environment Variables
 
-### Frontend (`.env`)
+| Variable | Where | Required | Description |
+|---|---|---|---|
+| `VITE_SUPABASE_URL` | Frontend `.env` | Yes | Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Frontend `.env` | Yes | Supabase publishable key |
+| `VITE_SUPABASE_PROJECT_ID` | Frontend `.env` | Yes | Supabase project ref |
+| `SUPABASE_URL` | Edge Function secret | Yes | Supabase URL for server-side operations |
+| `SUPABASE_SERVICE_ROLE_KEY` | Edge Function secret | Yes | Service role key for privileged writes |
+| `SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_ANON_KEY` | Edge Function secret | Yes | JWT user verification client key |
+| `AI_GATEWAY_URL` | Edge Function secret | Yes | OpenAI-compatible chat endpoint (Groq) |
+| `AI_GATEWAY_API_KEY` | Edge Function secret | Yes | Groq API key |
+| `AI_GATEWAY_MODEL` | Edge Function secret | Yes | Example: `llama-3.3-70b-versatile` |
+| `RESEND_GATEWAY_URL` | Edge Function secret | Optional | Connector base URL for email |
+| `GATEWAY_API_KEY` | Edge Function secret | Optional | Connector auth key |
+| `RESEND_API_KEY` | Edge Function secret | Optional | Resend provider key |
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_KEY`
-- `VITE_SUPABASE_PROJECT_ID`
+## ⚙️ Edge Functions Overview
 
-### Edge Functions (Supabase Secrets)
+| Function | What it does |
+|---|---|
+| `scrape-sources` | Fetches user-topic articles from Hacker News + Dev.to and dedupes into `articles` |
+| `filter-articles` | Scores unrated articles with Groq (`relevance`, `velocity`, `summary`) |
+| `assemble-briefing` | Builds daily structured briefing JSON from highest-signal scored stories |
+| `send-briefing-email` | Renders briefing email HTML and sends it through Resend connector |
+| `run-daily-pipeline` | Orchestrates scrape → filter → assemble → optional email for due users |
 
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `SUPABASE_PUBLISHABLE_KEY` (or `SUPABASE_ANON_KEY`)
-- `AI_GATEWAY_API_KEY`
-- `AI_GATEWAY_URL` (optional, has fallback)
-- `RESEND_GATEWAY_URL` (email function)
-- `GATEWAY_API_KEY` (email gateway auth)
-- `RESEND_API_KEY` (email provider key)
+## 🏠 Self-Hosting (Brief)
 
-## Edge Functions Overview
+1. Create a Supabase project
+2. Apply SQL migrations from `supabase/migrations`
+3. Deploy edge functions and set secrets
+4. Set frontend `.env` and deploy (Vercel/Netlify/Docker)
+5. (Optional) Configure cron for automated daily pipeline runs
 
-### `scrape-sources`
+Axon is free to self-host, and Groq provides a free usage tier to get started quickly.
 
-- Authenticated user endpoint
-- Reads user's topics
-- Fetches stories from Hacker News and Dev.to
-- Hashes URLs and upserts deduplicated rows into `articles`
+## 🛣️ Roadmap
 
-### `filter-articles`
+- [x] Topic-driven personalized onboarding
+- [x] Daily scraping from Hacker News and Dev.to
+- [x] AI relevance + velocity scoring
+- [x] Daily briefing generation and archive
+- [x] Optional email delivery toggle
+- [ ] Source expansion (Reddit, arXiv, product blogs)
+- [ ] Digest quality feedback loop (thumbs up/down learning)
+- [ ] Team/shared briefings
+- [ ] Multi-language briefings
 
-- Authenticated user endpoint
-- Loads unrated articles
-- Calls Gemini Flash with tool calling to return relevance/velocity/summary
-- Updates article scoring fields in `articles`
+## 🤝 Contributing
 
-### `assemble-briefing`
+Contributions are welcome and appreciated.
 
-- Authenticated user endpoint
-- Loads high-signal scored articles
-- Calls Gemini Flash with tool calling to produce structured briefing JSON
-- Writes daily row into `briefings`
+1. Fork the repo
+2. Create a feature branch (`feat/awesome-idea`)
+3. Commit your changes
+4. Open a PR with context + screenshots if UI changes are involved
 
-### `send-briefing-email`
+If you’re fixing bugs, include reproduction steps and expected behavior.
 
-- Supports service-role mode (`user_id`) and user JWT mode
-- Renders HTML email from briefing content + article links
-- Sends email via configured resend gateway
-- Marks `briefings.delivered_at` after successful send
+## 📄 License
 
-### `run-daily-pipeline`
-
-- Orchestrates scrape -> filter -> assemble -> optional email
-- Manual mode: run for one user
-- Cron mode: runs for users whose local delivery time is due
-- Intended to be scheduled via `pg_cron`
-
-## Typical Pipeline Flow
-
-1. User sets topics
-2. `scrape-sources` collects new content
-3. `filter-articles` scores signal quality
-4. `assemble-briefing` creates a concise daily briefing
-5. `send-briefing-email` delivers the briefing
-6. `run-daily-pipeline` automates the full sequence
-
-## Development Notes
-
-- Keep migrations append-only and ordered by timestamp.
-- Edge functions use service role for writes where needed.
-- AI responses are validated by structured tool-call schemas before persistence.
+MIT — see `LICENSE` for details.
