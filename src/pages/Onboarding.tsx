@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,20 +33,29 @@ const Onboarding = () => {
   const [deliveryTime, setDeliveryTime] = useState("07:00");
   const [timezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (!user) return;
+    if (submittingRef.current) return;
+    let cancelled = false;
     supabase
       .from("profiles")
       .select("display_name, delivery_time, onboarded")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
+        if (cancelled) return;
+        if (submittingRef.current) return;
         if (data?.display_name) setDisplayName(data.display_name);
         if (data?.delivery_time) setDeliveryTime(data.delivery_time.slice(0, 5));
         if (data?.onboarded) navigate("/dashboard", { replace: true });
       });
-  }, [user, navigate]);
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
 
   const addTopic = (raw: string) => {
     const name = raw.trim();
@@ -87,6 +96,7 @@ const Onboarding = () => {
       return;
     }
     setSubmitting(true);
+    submittingRef.current = true;
 
     // Insert topics
     const rows = topics.map((name) => ({ user_id: user.id, name }));
@@ -95,6 +105,7 @@ const Onboarding = () => {
       .upsert(rows, { onConflict: "user_id,name" });
     if (topicErr) {
       toast.error("Could not save topics: " + topicErr.message);
+      submittingRef.current = false;
       setSubmitting(false);
       return;
     }
@@ -111,11 +122,15 @@ const Onboarding = () => {
       .eq("user_id", user.id);
     if (profErr) {
       toast.error("Could not save profile: " + profErr.message);
+      submittingRef.current = false;
       setSubmitting(false);
       return;
     }
 
     toast.success("You're all set. First briefing brewing.");
+    await new Promise(r => setTimeout(r, 600));
+    submittingRef.current = false;
+    setSubmitting(false);
     navigate("/dashboard", { replace: true });
   };
 
@@ -215,7 +230,7 @@ const Onboarding = () => {
                   id="name"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Sarah Chen"
+                  placeholder="John Doe"
                 />
               </div>
 
