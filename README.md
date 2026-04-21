@@ -3,7 +3,7 @@
 # ⚡ Axon
 ### Signal before the noise
 
-[![Live on Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?logo=vercel&logoColor=white)](https://ai-axon.vercel.app)
+[![Live on Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?logo=vercel&logoColor=white)](https://ai-axon.vercel.app/)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20Auth%20%2B%20Edge%20Functions-3FCF8E?logo=supabase&logoColor=white)
 ![Groq](https://img.shields.io/badge/Groq-llama--3.3--70b-F55036)
@@ -17,6 +17,9 @@ Axon is a personal AI daily briefing agent that turns noisy feeds into focused m
 Pick your topics, let Axon ingest fresh stories, rank what matters with Groq AI, and deliver a clean briefing in a fast, beautiful dark UI.
 
 <img width="1902" height="946" alt="image" src="https://github.com/user-attachments/assets/fc00e5d1-9a34-47cb-be1d-0c70e6cf8d45" />
+
+<img width="1599" height="940" alt="image" src="https://github.com/user-attachments/assets/a5f749b4-518f-4155-8c93-d822a981fad0" />
+
 
 
 ## ✨ Features
