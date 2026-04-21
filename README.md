@@ -13,8 +13,7 @@
 
 </div>
 
-Axon is a personal AI daily briefing agent that turns noisy feeds into focused morning intelligence.  
-Pick your topics, let Axon ingest fresh stories, rank what matters with Groq AI, and deliver a clean briefing in a fast, beautiful dark UI.
+Axon is a personal AI daily briefing agent, collects news from across the web, filters and ranks it with AI, and sends you a focused daily briefing on your email.
 
 <img width="1902" height="946" alt="image" src="https://github.com/user-attachments/assets/fc00e5d1-9a34-47cb-be1d-0c70e6cf8d45" />
 
