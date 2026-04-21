@@ -10,7 +10,7 @@ const AI_GATEWAY_URL =
   Deno.env.get("AI_GATEWAY_URL") ??
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
-const FILTER_BATCH_SIZE = 5;
+const FILTER_BATCH_SIZE = 20;
 
 interface ArticleRow {
   id: string;
@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
       .eq("user_id", userId)
       .is("relevance_score", null)
       .order("fetched_at", { ascending: false })
-      .limit(FILTER_BATCH_SIZE);
+      .limit(100);
 
     if (error) throw error;
 
