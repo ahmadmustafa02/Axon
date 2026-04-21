@@ -166,6 +166,7 @@ export type Database = {
           delivery_time: string
           display_name: string | null
           email: string | null
+          email_enabled: boolean
           id: string
           onboarded: boolean
           timezone: string
@@ -177,6 +178,7 @@ export type Database = {
           delivery_time?: string
           display_name?: string | null
           email?: string | null
+          email_enabled?: boolean
           id?: string
           onboarded?: boolean
           timezone?: string
@@ -188,6 +190,7 @@ export type Database = {
           delivery_time?: string
           display_name?: string | null
           email?: string | null
+          email_enabled?: boolean
           id?: string
           onboarded?: boolean
           timezone?: string

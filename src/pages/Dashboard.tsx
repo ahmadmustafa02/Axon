@@ -14,6 +14,7 @@ interface Profile {
   display_name: string | null;
   delivery_time: string;
   timezone: string;
+  email_enabled: boolean;
 }
 
 interface TopicRow {
@@ -50,7 +51,7 @@ const Dashboard = () => {
   const loadAll = useCallback(async () => {
     if (!user) return;
     const [{ data: p }, { data: t }, { data: a }] = await Promise.all([
-      supabase.from("profiles").select("display_name, delivery_time, timezone").eq("user_id", user.id).maybeSingle(),
+      supabase.from("profiles").select("display_name, delivery_time, timezone, email_enabled").eq("user_id", user.id).maybeSingle(),
       supabase.from("topics").select("id, name").eq("user_id", user.id).order("created_at"),
       supabase
         .from("articles")
@@ -64,6 +65,18 @@ const Dashboard = () => {
     setTopics((t ?? []) as TopicRow[]);
     setArticles((a ?? []) as Article[]);
   }, [user]);
+
+  const toggleEmail = async () => {
+    if (!profile || !user) return;
+    const newVal = !profile.email_enabled;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ email_enabled: newVal })
+      .eq("user_id", user.id);
+    if (error) { toast.error("Could not update email preference."); return; }
+    setProfile((p) => (p ? { ...p, email_enabled: newVal } : p));
+    toast.success(newVal ? "Daily email enabled." : "Daily email disabled.");
+  };
 
   useEffect(() => {
     loadAll();
@@ -291,6 +304,25 @@ const Dashboard = () => {
                 . The pipeline runs on its own each morning.
               </p>
             )}
+            <div className="mt-6 flex items-center justify-between">
+              <span className="text-sm text-foreground/60">
+                Daily email
+              </span>
+              <button
+                type="button"
+                onClick={toggleEmail}
+                aria-label="Toggle daily email"
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                  profile?.email_enabled ? "bg-accent" : "bg-foreground/20"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                    profile?.email_enabled ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
 
