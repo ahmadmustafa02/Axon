@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { markSessionOnboarded } from "@/lib/onboardingSession";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
@@ -127,6 +128,7 @@ const Onboarding = () => {
       return;
     }
 
+    markSessionOnboarded(user.id);
     toast.success("You're all set. First briefing brewing.");
     await new Promise(r => setTimeout(r, 600));
     submittingRef.current = false;
