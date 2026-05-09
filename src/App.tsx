@@ -10,6 +10,7 @@ import Auth from "./pages/Auth.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Briefing from "./pages/Briefing.tsx";
+import Briefings from "./pages/Briefings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireOnboarded>
                   <Briefing />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/briefings"
+              element={
+                <ProtectedRoute requireOnboarded>
+                  <Briefings />
                 </ProtectedRoute>
               }
             />

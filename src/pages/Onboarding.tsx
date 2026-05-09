@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,8 @@ const SUGGESTED = [
 const Onboarding = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditingTopics = searchParams.get("edit") === "topics";
 
   const [step, setStep] = useState<1 | 2>(1);
   const [topics, setTopics] = useState<string[]>([]);
@@ -50,12 +52,29 @@ const Onboarding = () => {
         if (submittingRef.current) return;
         if (data?.display_name) setDisplayName(data.display_name);
         if (data?.delivery_time) setDeliveryTime(data.delivery_time.slice(0, 5));
-        if (data?.onboarded) navigate("/dashboard", { replace: true });
+        if (data?.onboarded && !isEditingTopics) navigate("/dashboard", { replace: true });
       });
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, isEditingTopics, navigate]);
+
+  useEffect(() => {
+    if (!user || !isEditingTopics) return;
+    let cancelled = false;
+    supabase
+      .from("topics")
+      .select("name")
+      .eq("user_id", user.id)
+      .order("created_at")
+      .then(({ data }) => {
+        if (cancelled || !data?.length) return;
+        setTopics(data.map((r) => r.name));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, isEditingTopics]);
 
 
   const addTopic = (raw: string) => {
@@ -87,6 +106,39 @@ const Onboarding = () => {
       return;
     }
     setStep(2);
+  };
+
+  const handleSaveTopicsOnly = async () => {
+    if (!user) return;
+    if (topics.length < 3) {
+      toast.error("Pick at least 3 topics");
+      return;
+    }
+    setSubmitting(true);
+    submittingRef.current = true;
+    const rows = topics.map((name) => ({ user_id: user.id, name }));
+    const { data: existing } = await supabase.from("topics").select("id, name").eq("user_id", user.id);
+    const keepLower = new Set(topics.map((t) => t.toLowerCase()));
+    const staleIds =
+      existing?.filter((r) => !keepLower.has(r.name.toLowerCase())).map((r) => r.id) ?? [];
+    if (staleIds.length > 0) {
+      const { error: delErr } = await supabase.from("topics").delete().in("id", staleIds);
+      if (delErr) {
+        submittingRef.current = false;
+        setSubmitting(false);
+        toast.error("Could not save topics: " + delErr.message);
+        return;
+      }
+    }
+    const { error } = await supabase.from("topics").upsert(rows, { onConflict: "user_id,name" });
+    submittingRef.current = false;
+    setSubmitting(false);
+    if (error) {
+      toast.error("Could not save topics: " + error.message);
+      return;
+    }
+    toast.success("Topics updated.");
+    navigate("/dashboard", { replace: true });
   };
 
   const handleFinish = async () => {
@@ -141,7 +193,7 @@ const Onboarding = () => {
       <header className="container flex items-center justify-between py-5">
         <Logo />
         <span className="text-xs uppercase tracking-[0.18em] text-foreground/50">
-          Step {step} of 2
+          {isEditingTopics ? "Edit topics" : `Step ${step} of 2`}
         </span>
       </header>
 
@@ -201,17 +253,28 @@ const Onboarding = () => {
                 </div>
               </div>
 
-              <div className="mt-8 flex items-center justify-between">
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
                 <span className="text-sm text-foreground/55">
                   {topics.length} / 10 — minimum 3
                 </span>
-                <Button onClick={handleNext} size="lg" disabled={topics.length < 3}>
-                  Continue
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
-                </Button>
+                {isEditingTopics ? (
+                  <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+                    <Button type="button" variant="ghost" onClick={() => navigate("/dashboard")}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSaveTopicsOnly} size="lg" disabled={topics.length < 3 || submitting}>
+                      {submitting ? "Saving…" : "Save topics"}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button onClick={handleNext} size="lg" disabled={topics.length < 3}>
+                    Continue
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </Button>
+                )}
               </div>
             </div>
           </>

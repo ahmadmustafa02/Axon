@@ -282,7 +282,12 @@ const Dashboard = () => {
                 <span className="text-sm text-foreground/50">No topics yet.</span>
               )}
             </div>
-            <Button variant="outline" size="sm" className="mt-6" onClick={() => navigate("/onboarding")}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-6"
+              onClick={() => navigate("/onboarding?edit=topics")}
+            >
               Edit topics
             </Button>
           </div>

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { authErrorUserMessage } from "@/lib/authErrorUserMessage";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
 
@@ -47,7 +48,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setSubmitting(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(authErrorUserMessage(error));
       return;
     }
     toast.success("Welcome back.");
@@ -67,7 +68,7 @@ const Auth = () => {
     });
     setSubmitting(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(authErrorUserMessage(error));
       return;
     }
     toast.success("Account created. Let's set up your briefing.");
@@ -80,7 +81,7 @@ const Auth = () => {
         redirectTo: `${window.location.origin}/dashboard`,
       },
     });
-    if (error) toast.error(error.message);
+    if (error) toast.error(authErrorUserMessage(error));
   };
 
   return (
